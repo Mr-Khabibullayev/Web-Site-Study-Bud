@@ -2,19 +2,21 @@
     <div class="activities__header">
         <h2>Recent Activities</h2>
     </div>
+    {% for message in room_messages %}
     <div class="activities__box">
         <div class="activities__boxHeader roomListRoom__header">
             <a href="{% url 'user-profile' message.user.pk %}" class="roomListRoom__author">
                 <div class="avatar avatar--small">
-                    <img src="https://randomuser.me/api/portraits/women/11.jpg" />
+                    <img src="{{message.user.avatar.url}}" />
                 </div>
                 <p>
-                    @sulamita_ivy
-                    <span>5 days ago</span>
+                    @{{message.user}}
+                    <span>{{message.created|timesince}}  ago</span>
                 </p>
             </a>
+            {% if request.user == message.user %}
             <div class="roomListRoom__actions">
-                <a href="#">
+                <a href="{% url 'delete-message' message.id  %}">
                     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32"
                         viewBox="0 0 32 32">
                         <title>remove</title>
@@ -24,27 +26,15 @@
                     </svg>
                 </a>
             </div>
+            {% endif %}  
         </div>
         <div class="activities__boxContent">
-            <p>replied to post “<a href="room.html">100 Days of code challenge!</a>”</p>
+            <p>replied to post “<a href="{% url 'room' message.room.id %}">{{message.room}}</a>”</p>
             <div class="activities__boxRoomContent">
-                I’ll have to try this sometime. Really like this idea. Wanna talk about it? I ‘m....
+                {{message.body}}
             </div>
         </div>
     </div>
+    {% endfor %}
 
 </div>
-
-
-{% for message in room_messages %}
-<div>
-    <small><a href="{% url 'user-profile' message.user.id %}">@{{message.user}}</a> {{message.created|timesince}}</small>
-    <small>replaid to "{{message.room}}"</small>
-
-    <p>{{message}}</p>
-    {% if request.user == message.user %}
-    <a href="{% url 'delete-message' message.id  %}">Delete</a>
-    {% endif %}                                 
-    <hr>
-</div>
-{% endfor %}
